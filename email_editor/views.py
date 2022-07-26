@@ -6,7 +6,7 @@ from django.views import generic
 from email_editor.preview import get_preview_classes, extract_subject
 
 
-class EmailTemplatePreviewAdmin(LoginRequiredMixin, generic.TemplateView):
+class EmailTemplatePreviewView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'email_editor/email-preview.html'
     errors = []
 
@@ -18,7 +18,7 @@ class EmailTemplatePreviewAdmin(LoginRequiredMixin, generic.TemplateView):
         if not request.user.is_staff:
             return HttpResponseForbidden('Forbidden')
 
-        return super(EmailTemplatePreviewAdmin, self).dispatch(request, *args, **kwargs)
+        return super(EmailTemplatePreviewView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

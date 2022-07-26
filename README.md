@@ -18,18 +18,17 @@ INSTALLED_APPS = (
 
 And add the frontend path to `url.py`:
 
-
 ```python
 # for example like this
 from django.conf.urls import url
 from django.contrib import admin
 
-from email_editor.views import EmailTemplatePreviewAdmin
+from email_editor.views import EmailTemplatePreviewView
 
 urlpatterns = [
-  url(r'^admin/preview/', EmailTemplatePreviewAdmin.as_view()),
+    url(r'^admin/preview/', EmailTemplatePreviewView.as_view()),
 
-  url(r'^admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
 ]
 ```
 
