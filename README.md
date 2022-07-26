@@ -2,6 +2,8 @@
 
 Fast and easy way to edit and manage email templates.
 
+![email_editor](https://user-images.githubusercontent.com/17835639/180997275-eaa66c95-fda0-4003-be44-99077195a062.png)
+
 ### Install
 
 Add `email_editor` to your INSTALLED_APPS in django's `settings.py`:
