@@ -4,9 +4,17 @@ import os
 import re
 from typing import Union
 
-from django.template import loader, Template, Engine, TemplateSyntaxError
+from django.template import loader, Template, Engine, TemplateSyntaxError, Context
 from django.template.backends.django import DjangoTemplates
 from django.template.loader import _engine_list
+
+is_post_office_installed = None
+
+try:
+    from post_office.models import EmailTemplate
+    is_post_office_installed = True
+except ModuleNotFoundError as e:
+    is_post_office_installed = False
 
 CLASS_REGISTRY = []
 
@@ -35,10 +43,14 @@ def extract_subject(template: Template) -> Union[str, None]:
 
 class EmailPreview(abc.ABC):
     template_name = None
+    is_post_office = False
 
     def __init__(self):
         if not self.template_name:
             raise Exception(f'No "template_name" set in "{self.__class__.__name__}"')
+
+        if self.is_post_office and not is_post_office_installed:
+            raise Exception(f'"post_office" is used by "{self.__class__.__name__}" but is not installed.')
 
     @staticmethod
     def _build_tree(item: dict, depth=0, max_depth=3):
@@ -60,6 +72,23 @@ class EmailPreview(abc.ABC):
             result[key] = value
 
         return result
+
+    @property
+    def subject(self):
+        if self.is_post_office:
+            return self.template.subject
+
+        return extract_subject(self.template)
+
+    def write(self, content):
+        if self.is_post_office:
+            template_instance = self.template
+            template_instance.html_content = content
+            template_instance.save()
+            return
+
+        with open(self.path, 'w') as file:
+            file.write(content)
 
     @property
     def context_tree(self):
@@ -86,11 +115,20 @@ class EmailPreview(abc.ABC):
 
     @property
     def raw_content(self):
+        if self.is_post_office:
+            return self.template.html_content or self.template_name.content
+
         with open(self.path, 'r') as file:
             return file.read()
 
     @property
-    def template(self):
+    def template(self) -> Union[EmailTemplate, Template]:
+        if self.is_post_office:
+            try:
+                return EmailTemplate.objects.get(name=self.template_name)
+            except EmailTemplate.DoesNotExist as e:
+                raise EmailTemplate.DoesNotExist(f'"{self.template_name}" - {e}')
+
         return loader.get_template(self.template_name)
 
     def get_template_context(self):
@@ -98,4 +136,9 @@ class EmailPreview(abc.ABC):
 
     def render(self, request):
         context = self.get_template_context()
+
+        if self.is_post_office:
+            template = Template(self.template.html_content)
+            return template.render(Context(context))
+
         return self.template.render(context=context, request=request).strip()

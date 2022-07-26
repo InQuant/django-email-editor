@@ -1,10 +1,10 @@
 import sys
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
+from email_editor import __version__
 
 
 class Tox(TestCommand):
-
     def initialize_options(self):
         TestCommand.initialize_options(self)
         self.tox_args = None
@@ -30,7 +30,7 @@ TESTS_REQUIRE = ['tox >= 2.3']
 
 setup(
     name='django-email-editor',
-    version='0.1.0',
+    version=__version__,
     author='Dominik Lysiak',
     author_email='dominik.lysiak@inquant.de',
     packages=['email_editor'],

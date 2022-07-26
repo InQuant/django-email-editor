@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'email_editor',
     'email_editor.tests',
     'test_project',
+    'post_office',
 ]
 
 

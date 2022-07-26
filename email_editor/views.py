@@ -1,9 +1,14 @@
+import typing
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.template import TemplateSyntaxError
 from django.views import generic
 
 from email_editor.preview import get_preview_classes, extract_subject
+
+if typing.TYPE_CHECKING:
+    from email_editor.preview import EmailPreview
 
 
 class EmailTemplatePreviewView(LoginRequiredMixin, generic.TemplateView):
@@ -47,10 +52,10 @@ class EmailTemplatePreviewView(LoginRequiredMixin, generic.TemplateView):
         if not PreviewCls:
             return HttpResponseBadRequest()
 
-        instance = PreviewCls()
+        instance = PreviewCls()     # type: EmailPreview
         try:
             html = instance.render(request)
-            subject = extract_subject(instance.template)
+            subject = instance.subject
         except TemplateSyntaxError as e:
             subject = None
             html = None
@@ -80,9 +85,6 @@ class EmailTemplatePreviewView(LoginRequiredMixin, generic.TemplateView):
             return self.get(request, *args, **kwargs)
 
         instance = PreviewCls()
-        template_path = instance.path
-
-        with open(template_path, 'w') as file:
-            file.write(content)
+        instance.write(content)
 
         return self.get(request, *args, **kwargs)
