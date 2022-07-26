@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset=UTF-8>
+  <title>Edit Template</title>
+  <style>
+    .c-wrapper {
+      display: grid;
+      grid-template-columns: 50% 50%;
+      column-gap: 20px;
+    }
+
+    .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+{% for err in errors %}
+  <div style="background-color: red; color: white; border-radius: 5px; padding: 0.5rem; margin: 1rem 0">
+    {{ err }}
+  </div>
+{% endfor %}
+
+<div>
+  <form action="" method="get">
+    <div style="margin-bottom: 1rem">
+      <select name="preview_cls" class="btn">
+        {% for cls in preview_cls_list %}
+          <option {% if cls|first == request.GET.preview_cls %}selected {% endif %}value="{{ cls|first }}">{{ cls|first}}</option>
+        {% empty %}
+          <option disabled selected> --- No defined --- </option>
+        {% endfor %}
+      </select>
+      <input type="submit" value="Render Template" class="btn">
+    </div>
+  </form>
+</div>
+
+<div class="c-wrapper">
+  {% if raw %}
+    <div style="">
+      <form action="{{ request.get_full_path }}" method="post">
+        {% csrf_token %}
+        <textarea style="" id="htmlEditor" name="content">{{ raw|safe }}</textarea>
+        <button style="margin-top: 1rem" name="save" type="submit" class="btn">Save</button>
+      </form>
+    </div>
+  {% endif %}
+
+  <div>
+    {% if subject %}
+      <div><h3>Subject: {{ subject }}</h3></div>
+    {% endif %}
+
+    {% if html %}
+      <fieldset style="margin: 0.15rem; padding:0; border: 1px dotted black; background-color: white" id="contentHtml">
+        <legend>Preview</legend>
+        {{ html|safe }}
+      </fieldset>
+    {% endif %}
+  </div>
+</div>
+
+{% if context_tree %}
+<div style="margin: 1rem 0">
+  <pre>{{ context_tree|pprint }}</pre>
+</div>
+{% endif %}
+
+<script src="{% static 'email_editor/js/tinymce/tinymce.min.js' %}" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#htmlEditor',
+        plugins: 'code',
+        entity_encoding: 'raw',
+        toolbar: 'undo redo | styleselect | bold italic |' +
+            'alignleft aligncenter alignright alignjustify |' +
+            'bullist numlist outdent indent | link image | code',
+    });
+</script>
+</body>
+</html>
