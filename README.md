@@ -85,13 +85,7 @@ EMAIL_EDITOR = {
 
     # tinymce default init parameters
     'TINY_MCE_INIT': {
-        'selector': '#htmlEditor',
-        'plugins': ['code', 'link', 'image', 'emoticons', 'quickbars', 'autoresize'],
-        'entity_encoding': 'raw',
-        'toolbar': 'undo redo | styleselect | bold italic |' +
-                   'alignleft aligncenter alignright alignjustify |' +
-                   'bullist numlist outdent indent | link image | code emoticons hr',
-
+        # e.g. keys: plugins, toolbar ... 
     },
 
     # change editor ('ckeditor' | 'tinymce')

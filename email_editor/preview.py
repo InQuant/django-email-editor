@@ -116,7 +116,7 @@ class EmailPreview(abc.ABC):
     @property
     def raw_content(self):
         if self.is_post_office:
-            return self.template.html_content or self.template_name.content
+            return self.template.html_content or self.template.content or ''
 
         with open(self.path, 'r') as file:
             return file.read()

@@ -41,7 +41,7 @@
 </div>
 
 <div class="c-wrapper">
-  {% if raw %}
+  {% if raw != None %}
     <div style="">
       <form action="{{ request.get_full_path }}" method="post">
         {% csrf_token %}
@@ -52,11 +52,11 @@
   {% endif %}
 
   <div>
-    {% if subject %}
+    {% if subject != None %}
       <div><h3>Subject: {{ subject }}</h3></div>
     {% endif %}
 
-    {% if html %}
+    {% if html != None%}
       <fieldset style="margin: 0.15rem; padding:0; border: 1px dotted black; background-color: white" id="contentHtml">
         <legend>Preview</legend>
         {{ html|safe }}

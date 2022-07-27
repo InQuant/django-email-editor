@@ -13,11 +13,12 @@ DEFAULTS = {
     'PREVIEW_ONLY': False,
     'TINY_MCE_INIT': {
         'selector': '#htmlEditor',
-        'plugins': ['code', 'link', 'image', 'emoticons', 'quickbars', 'autoresize'],
+        'plugins': ['code', 'table', 'link', 'lists', 'media', 'image', 'emoticons', 'quickbars', 'autoresize'],
         'entity_encoding': 'raw',
-        'toolbar': 'undo redo | styleselect | bold italic |' +
-            'alignleft aligncenter alignright alignjustify |' +
-            'bullist numlist outdent indent | link image | code emoticons hr',
+
+        'toolbar': 'undo redo | emoticons | blocks | styleselect | hr | bold italic |' +
+                   'alignleft aligncenter alignright alignjustify |' +
+                   'bullist numlist outdent indent | link image | code',
 
     },
     'WYSIWYG_EDITOR': WYSIWYGEditor.TINY_MCE

@@ -2,7 +2,9 @@ import typing
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.shortcuts import redirect
 from django.template import TemplateSyntaxError
+from django.urls import reverse
 from django.views import generic
 
 from email_editor.preview import get_preview_classes, extract_subject
@@ -27,7 +29,7 @@ class EmailTemplatePreviewView(LoginRequiredMixin, generic.TemplateView):
 
         self.errors = []
         if not request.user.is_staff:
-            return HttpResponseForbidden('Forbidden')
+            return redirect(f'{reverse("admin:login")}?next={request.get_full_path()}')
 
         return super(EmailTemplatePreviewView, self).dispatch(request, *args, **kwargs)
 
