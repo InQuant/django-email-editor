@@ -1,13 +1,15 @@
 import typing
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.template import TemplateSyntaxError
 from django.urls import reverse
+from django.utils import translation
+from django.utils.translation import get_language
 from django.views import generic
 
-from email_editor.preview import get_preview_classes, extract_subject
+from email_editor.preview import get_preview_classes
 from email_editor.settings import app_settings
 
 if typing.TYPE_CHECKING:
@@ -87,7 +89,13 @@ class EmailTemplatePreviewView(LoginRequiredMixin, generic.TemplateView):
         if is_api_response:
             return JsonResponse(context)
 
+        # set language
+        if instance.language:
+            translation.activate(instance.language)
+            request.session[translation.LANGUAGE_SESSION_KEY] = instance.language
+
         return self.render_to_response({
+            'language': get_language(),
             **context,
             **self.get_context_data()
         })

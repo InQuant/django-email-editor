@@ -7,6 +7,7 @@ from email_editor.preview import register, EmailPreview
 class WelcomeEmailPreview(EmailPreview):
     template_name = 'test'
     is_post_office = True
+    # language = 'en'
 
     def get_template_context(self, *args, **kwargs):
         return {

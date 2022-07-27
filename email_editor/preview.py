@@ -136,7 +136,11 @@ class EmailPreview(abc.ABC):
     def template(self) -> Union[EmailTemplate, Template]:
         if self.is_post_office:
             try:
-                return EmailTemplate.objects.get(name=self.template_name, default_template__isnull=True)
+                return EmailTemplate.objects.get(
+                    name=self.template_name,
+                    default_template__isnull=True if not self.language else False,
+                    language=self.language or ''
+                )
             except EmailTemplate.DoesNotExist as e:
                 raise EmailTemplate.DoesNotExist(f'"{self.template_name}" - {e}')
 
