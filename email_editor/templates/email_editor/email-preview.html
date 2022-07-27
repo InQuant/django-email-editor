@@ -77,7 +77,7 @@
       tinymce.init({{ tiny_mce_settings|safe }});
   </script>
 {% elif editor_type == 'ckeditor' %}
-  <script src="{% static 'email_editor/js/ckeditor5/ckeditor.js' %}" referrerpolicy="origin"></script>
+  <script src="{% static 'email_editor/js/ckeditor5/build/ckeditor.js' %}" referrerpolicy="origin"></script>
   <script>
       ClassicEditor
           .create( document.querySelector( '#htmlEditor' ) )

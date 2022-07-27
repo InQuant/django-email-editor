@@ -28,10 +28,9 @@ DEFAULTS = {
         'toolbar': 'undo redo | emoticons | blocks | styleselect | hr | bold italic forecolor backcolor |' +
                    'alignleft aligncenter alignright alignjustify |' +
                    'bullist numlist outdent indent | link image | code',
-        'extended_valid_elements': 'svg[*],defs[*],pattern[*],desc[*],metadata[*],g[*],mask[*],path[*],line[*],marker[*],rect[*],circle[*],ellipse[*],polygon[*],polyline[*],linearGradient[*],radialGradient[*],stop[*],image[*],view[*],text[*],textPath[*],title[*],tspan[*],glyph[*],symbol[*],switch[*],use[*]'
-
+        'extended_valid_elements': 'svg[*],defs[*],pattern[*],desc[*],metadata[*],g[*],mask[*],path[*],line[*],marker[*],rect[*],circle[*],ellipse[*],polygon[*],polyline[*],linearGradient[*],radialGradient[*],stop[*],image[*],view[*],text[*],textPath[*],title[*],tspan[*],glyph[*],symbol[*],switch[*],use[*]',
     },
-    'WYSIWYG_EDITOR': WYSIWYGEditor.TINY_MCE,
+    'WYSIWYG_EDITOR': WYSIWYGEditor.CKEDITOR,
     'CONTEXT_TREE_MAX_DEPTH': 3
 }
 

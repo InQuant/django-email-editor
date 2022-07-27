@@ -45,6 +45,7 @@ def extract_subject(template: Template, context=None) -> Union[str, None]:
 class EmailPreview(abc.ABC):
     template_name = None
     is_post_office = False
+    language = None
 
     def __init__(self):
         if not self.template_name:

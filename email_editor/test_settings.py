@@ -1,4 +1,6 @@
 import os
+from django.utils.translation import gettext_lazy as _
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # the name of the whole site
@@ -14,10 +16,6 @@ SECRET_KEY = 'abc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 SITE_ID = 1
-
-LANGUAGES = (
-    ('en-us', 'English'),
-)
 
 DATABASES = {
     'default': {
@@ -93,4 +91,13 @@ EMAIL_EDITOR = {
     'TINY_MCE_COLOR_MAP':  [
         'FFFF00', 'Yellow',
     ],
+    'WYSIWYG_EDITOR': 'ckeditor',
 }
+
+USE_I18N = True
+LANGUAGE_CODE = 'de'
+
+LANGUAGES = [
+    ('de', _('German')),
+    ('en', _('English')),
+]

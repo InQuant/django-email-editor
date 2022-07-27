@@ -89,7 +89,7 @@ EMAIL_EDITOR = {
     },
 
     # change editor ('ckeditor' | 'tinymce')
-    'WYSIWYG_EDITOR': 'tinymce',
+    'WYSIWYG_EDITOR': 'ckeditor',
     
     # preview show context: set max depth
     'CONTEXT_TREE_MAX_DEPTH': 3
