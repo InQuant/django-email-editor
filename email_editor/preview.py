@@ -1,12 +1,13 @@
 import abc
-import inspect
 import os
 import re
 from typing import Union
 
-from django.template import loader, Template, Engine, TemplateSyntaxError, Context
+from django.template import loader, Template, TemplateSyntaxError, Context
 from django.template.backends.django import DjangoTemplates
 from django.template.loader import _engine_list
+
+from email_editor.settings import app_settings
 
 is_post_office_installed = None
 
@@ -53,7 +54,7 @@ class EmailPreview(abc.ABC):
             raise Exception(f'"post_office" is used by "{self.__class__.__name__}" but is not installed.')
 
     @staticmethod
-    def _build_tree(item: dict, depth=0, max_depth=3):
+    def _build_tree(item: dict, depth=0, max_depth=app_settings.CONTEXT_TREE_MAX_DEPTH):
         result = {}
         for key, value in item.items():
             if depth == max_depth:

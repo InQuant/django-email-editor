@@ -10,18 +10,28 @@ class WYSIWYGEditor(str, Enum):
 
 
 DEFAULTS = {
+    'TINY_MCE_COLOR_MAP':  [
+        '000000', 'Black',
+        '808080', 'Gray',
+        'FFFFFF', 'White',
+        'FF0000', 'Red',
+        'FFFF00', 'Yellow',
+        '008000', 'Green',
+        '0000FF', 'Blue'
+    ],
     'PREVIEW_ONLY': False,
     'TINY_MCE_INIT': {
         'selector': '#htmlEditor',
         'plugins': ['code', 'table', 'link', 'lists', 'media', 'image', 'emoticons', 'quickbars', 'autoresize'],
         'entity_encoding': 'raw',
 
-        'toolbar': 'undo redo | emoticons | blocks | styleselect | hr | bold italic |' +
+        'toolbar': 'undo redo | emoticons | blocks | styleselect | hr | bold italic forecolor backcolor |' +
                    'alignleft aligncenter alignright alignjustify |' +
                    'bullist numlist outdent indent | link image | code',
 
     },
-    'WYSIWYG_EDITOR': WYSIWYGEditor.TINY_MCE
+    'WYSIWYG_EDITOR': WYSIWYGEditor.TINY_MCE,
+    'CONTEXT_TREE_MAX_DEPTH': 3
 }
 
 
@@ -54,6 +64,10 @@ class AppSettings:
         # Cache the result
         self._cached_attrs.add(attr)
         setattr(self, attr, val)
+
+        if attr == 'TINY_MCE_INIT':
+            val['color_map'] = self.TINY_MCE_COLOR_MAP
+
         return val
 
     @property

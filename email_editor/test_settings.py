@@ -89,5 +89,8 @@ MEDIA_URL = '/m/'
 MEDIA_ROOT = 'media/'
 
 EMAIL_EDITOR = {
-    'PREVIEW_ONLY': False
+    'PREVIEW_ONLY': False,
+    'TINY_MCE_COLOR_MAP':  [
+        'FFFF00', 'Yellow',
+    ],
 }
