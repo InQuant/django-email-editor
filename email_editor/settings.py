@@ -1,13 +1,32 @@
+from enum import Enum
+
 from django.conf import settings
 from django.test.signals import setting_changed
 
 
-DEFAULTS = {}
+class WYSIWYGEditor(str, Enum):
+    TINY_MCE = 'tinymce'
+    CKEDITOR = 'ckeditor'
+
+
+DEFAULTS = {
+    'PREVIEW_ONLY': False,
+    'TINY_MCE_INIT': {
+        'selector': '#htmlEditor',
+        'plugins': ['code', 'link', 'image', 'emoticons', 'quickbars', 'autoresize'],
+        'entity_encoding': 'raw',
+        'toolbar': 'undo redo | styleselect | bold italic |' +
+            'alignleft aligncenter alignright alignjustify |' +
+            'bullist numlist outdent indent | link image | code emoticons hr',
+
+    },
+    'WYSIWYG_EDITOR': WYSIWYGEditor.TINY_MCE
+}
 
 
 class AppSettings:
     """
-    A settings object that allows thj app settings to be accessed as
+    A settings object that allows the app settings to be accessed as
     properties. For example:
         from app_name.settings import app_settings
         print(app_settings.DEFAULT_NAME)
@@ -39,7 +58,7 @@ class AppSettings:
     @property
     def user_settings(self):
         if not hasattr(self, '_user_settings'):
-            self._user_settings = getattr(settings, 'CHANGE_ME', {})
+            self._user_settings = getattr(settings, 'EMAIL_EDITOR', {})
         return self._user_settings
 
     def reload(self):
@@ -53,7 +72,7 @@ app_settings = AppSettings(None, DEFAULTS)
 
 def reload_app_settings(*args, **kwargs):
     setting = kwargs['setting']
-    if setting == 'CHANGE_ME':
+    if setting == 'EMAIL_EDITOR':
         app_settings.reload()
 
 

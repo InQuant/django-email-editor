@@ -10,9 +10,9 @@ Add `email_editor` to your INSTALLED_APPS in django's `settings.py`:
 
 ```python
 INSTALLED_APPS = (
-  # ...
-  "email_editor",
-  # ...
+    # ...
+    "email_editor",
+    # ...
 )
 ```
 
@@ -43,15 +43,18 @@ from email_editor.preview import register, EmailPreview
 
 @register
 class WelcomeEmailPreview(EmailPreview):
-  template_name = 'path/to/template/welcome_mail.html'
+    template_name = 'path/to/template/welcome_mail.html'
+    
+    # change this to true if you choose a post office email template in "template_name"
+    is_post_office = False
 
-  def get_template_context(self):
-    return {
-      'user': get_user_model().objects.first(),
-      'test': {
-        'Test': 'test'
-      }
-    }
+    def get_template_context(self):
+        return {
+            'user': get_user_model().objects.first(),
+            'test': {
+                'Test': 'test'
+            }
+        }
 
 ```
 
@@ -71,7 +74,27 @@ Simply add following code to the beginning of the file:
 </div>
 ```
 
+## Settings
 
+These are the default settings for the module.
 
+```python
+EMAIL_EDITOR = {
+    # show only template previews without editor 
+    'PREVIEW_ONLY': False,
 
+    # tinymce default init parameters
+    'TINY_MCE_INIT': {
+        'selector': '#htmlEditor',
+        'plugins': ['code', 'link', 'image', 'emoticons', 'quickbars', 'autoresize'],
+        'entity_encoding': 'raw',
+        'toolbar': 'undo redo | styleselect | bold italic |' +
+                   'alignleft aligncenter alignright alignjustify |' +
+                   'bullist numlist outdent indent | link image | code emoticons hr',
 
+    },
+
+    # change editor ('ckeditor' | 'tinymce')
+    'WYSIWYG_EDITOR': 'tinymce'
+}
+```

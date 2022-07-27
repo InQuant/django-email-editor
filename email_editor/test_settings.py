@@ -87,3 +87,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/m/'
 
 MEDIA_ROOT = 'media/'
+
+EMAIL_EDITOR = {
+    'PREVIEW_ONLY': False
+}

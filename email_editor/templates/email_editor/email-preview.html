@@ -31,7 +31,7 @@
       <select name="preview_cls" class="btn">
         {% for cls in preview_cls_list %}
           <option {% if cls|first == request.GET.preview_cls %}selected {% endif %}value="{{ cls|first }}">{{ cls|first}}</option>
-        {% empty %}
+          {% empty %}
           <option disabled selected> --- No defined --- </option>
         {% endfor %}
       </select>
@@ -66,21 +66,25 @@
 </div>
 
 {% if context_tree %}
-<div style="margin: 1rem 0">
-  <pre>{{ context_tree|pprint }}</pre>
-</div>
+  <div style="margin: 1rem 0">
+    <pre>{{ context_tree|pprint }}</pre>
+  </div>
 {% endif %}
 
-<script src="{% static 'email_editor/js/tinymce/tinymce.min.js' %}" referrerpolicy="origin"></script>
-<script>
-    tinymce.init({
-        selector: '#htmlEditor',
-        plugins: 'code link image emoticons hr quickbars autoresize imagetools',
-        entity_encoding: 'raw',
-        toolbar: 'undo redo | styleselect | bold italic |' +
-            'alignleft aligncenter alignright alignjustify |' +
-            'bullist numlist outdent indent | link image | code emoticons hr',
-    });
-</script>
+{% if editor_type == 'tinymce' %}
+  <script src="{% static 'email_editor/js/tinymce/tinymce.min.js' %}" referrerpolicy="origin"></script>
+  <script>
+      tinymce.init({{ tiny_mce_settings|safe }});
+  </script>
+{% elif editor_type == 'ckeditor' %}
+  <script src="{% static 'email_editor/js/ckeditor5/ckeditor.js' %}" referrerpolicy="origin"></script>
+  <script>
+      ClassicEditor
+          .create( document.querySelector( '#htmlEditor' ) )
+          .catch( error => {
+              console.error( error );
+          } );
+  </script>
+{% endif %}
 </body>
 </html>
