@@ -95,3 +95,30 @@ EMAIL_EDITOR = {
     'CONTEXT_TREE_MAX_DEPTH': 3
 }
 ```
+
+## Additional
+
+If you want to extract subjects from the html email template the ```django-email-editor``` way, 
+you can use the ```extract_subject``` function.
+
+```python
+from django.template import loader
+
+# import the function
+from email_editor.preview import extract_subject
+
+template = loader.get_template('your_app/your_template_name.html')
+
+"""
+Dont forget to put the subject into the html file like that: 
+'<!-- Subject: Your Subject --> ...' 
+at the beginning of your template file
+"""
+
+
+mail.send(
+    subject=extract_subject(template),
+    recipients=['test@localhost'],
+    # ...
+)
+```
