@@ -27,14 +27,14 @@ def get_preview_classes():
     return CLASS_REGISTRY
 
 
-def extract_subject(template: Template) -> Union[str, None]:
+def extract_subject(template: Template, context=None) -> Union[str, None]:
     """
     This will extract the subject from a html file if it's in the first line like following format:
 
     e.g. <!-- Subject: test!! -->
     => results in "test!!"
     """
-    html = template.render({})
+    html = template.render(context)
     subject_regex = re.search(r'<!--.*[sS]ubject: *(?P<subject>.*) *-->', html)
     if not subject_regex:
         return
@@ -56,17 +56,20 @@ class EmailPreview(abc.ABC):
     def _build_tree(item: dict, depth=0, max_depth=3):
         result = {}
         for key, value in item.items():
+            if depth == max_depth:
+                return {key: value}
+
             if hasattr(value, "__class__") and hasattr(value, "__dict__"):
                 if depth == max_depth:
                     result[key] = str(type(value))
 
-                result[key] = EmailPreview._build_tree(value.__dict__, depth=depth + 1)
+                result[key] = EmailPreview._build_tree(value.__dict__, depth=depth+1, max_depth=max_depth)
                 continue
 
             if isinstance(value, dict):
                 if depth == max_depth:
                     result[key] = value
-                result[key] = EmailPreview._build_tree(value, depth=depth+1)
+                result[key] = EmailPreview._build_tree(value, depth=depth+1, max_depth=max_depth)
                 continue
 
             result[key] = value
@@ -74,11 +77,17 @@ class EmailPreview(abc.ABC):
         return result
 
     @property
+    def context(self):
+        return self.get_template_context()
+
+    @property
     def subject(self):
         if self.is_post_office:
-            return self.template.subject
+            # render str
+            template = Template(self.template.subject or '')
+            return template.render(Context(self.context))
 
-        return extract_subject(self.template)
+        return extract_subject(self.template, context=self.context)
 
     def write(self, content):
         if self.is_post_office:
@@ -125,20 +134,19 @@ class EmailPreview(abc.ABC):
     def template(self) -> Union[EmailTemplate, Template]:
         if self.is_post_office:
             try:
-                return EmailTemplate.objects.get(name=self.template_name)
+                return EmailTemplate.objects.get(name=self.template_name, default_template__isnull=True)
             except EmailTemplate.DoesNotExist as e:
                 raise EmailTemplate.DoesNotExist(f'"{self.template_name}" - {e}')
 
         return loader.get_template(self.template_name)
 
-    def get_template_context(self):
+    def get_template_context(self, *args, **kwargs):
         raise NotImplementedError('No context defined')
 
-    def render(self, request):
-        context = self.get_template_context()
-
+    def render(self, request, **kwargs):
+        kwargs['request'] = request
         if self.is_post_office:
             template = Template(self.template.html_content)
-            return template.render(Context(context))
+            return template.render(Context(self.get_template_context(**kwargs)))
 
-        return self.template.render(context=context, request=request).strip()
+        return self.template.render(context=self.get_template_context(**kwargs), request=request).strip()

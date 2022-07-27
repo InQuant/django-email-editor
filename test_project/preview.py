@@ -8,7 +8,7 @@ class WelcomeEmailPreview(EmailPreview):
     template_name = 'test'
     is_post_office = True
 
-    def get_template_context(self):
+    def get_template_context(self, *args, **kwargs):
         return {
             'user': User.objects.first(),
             'test': {
@@ -21,7 +21,7 @@ class WelcomeEmailPreview(EmailPreview):
 class WelcomeEmailEnPreview(EmailPreview):
     template_name = 'test_project/welcome_mail.html'
 
-    def get_template_context(self):
+    def get_template_context(self, *args, **kwargs):
         return {
             'user': User.objects.first(),
             'test': {
