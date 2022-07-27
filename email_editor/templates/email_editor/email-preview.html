@@ -35,12 +35,14 @@
           <option disabled selected> --- No defined --- </option>
         {% endfor %}
       </select>
-      <input type="submit" value="Render Template" class="btn">
+      <input type="submit" value="Load Template" class="btn">
     </div>
   </form>
 </div>
 
-<h3>Language: {{ language }}</h3>
+{% if language != None %}
+  <h3>Language: {{ language }}</h3>
+{% endif %}
 
 <div class="c-wrapper">
   {% if raw != None %}
