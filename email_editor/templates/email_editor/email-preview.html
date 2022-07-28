@@ -40,6 +40,23 @@
   </form>
 </div>
 
+{% if request.resolver_match.kwargs.preview_cls %}
+  <div>
+    <form action="" method="get">
+      <div style="margin-bottom: 1rem">
+        <select name="editor" class="btn">
+          {% for e in editor_list %}
+            <option {% if editor_type == e %} selected {% endif %}value="{{ e }}">{{ e }}</option>
+            {% empty %}
+            <option disabled selected> --- No defined --- </option>
+          {% endfor %}
+        </select>
+        <input type="submit" value="Load Editor" class="btn">
+      </div>
+    </form>
+  </div>
+{% endif %}
+
 {% if language != None %}
   <h3>Language: {{ language }}</h3>
 {% endif %}
@@ -49,7 +66,12 @@
     <div style="">
       <form action="{{ request.get_full_path }}" method="post">
         {% csrf_token %}
-        <textarea style="" id="htmlEditor" name="content">{{ raw|safe }}</textarea>
+        {% if editor_type in 'ace' %}
+          <div style="width: 100%" id="htmlEditorDiv">{{ raw }}</div>
+          <input id="htmlEditorValue" type="hidden" value="{{ raw }}" name="content" />
+        {% else %}
+          <textarea style="" id="htmlEditor" name="content">{{ raw|safe }}</textarea>
+        {% endif %}
         <button style="margin-top: 1rem" name="save" type="submit" class="btn">Save</button>
       </form>
     </div>
@@ -80,14 +102,16 @@
   <script>
       tinymce.init({{ tiny_mce_settings|safe }});
   </script>
+{% elif editor_type == 'ace' %}
+  {% include 'email_editor/js/ace_editor.html' %}
 {% elif editor_type == 'ckeditor' %}
-  <script src="{% static 'email_editor/js/ckeditor5/build/ckeditor.js' %}" referrerpolicy="origin"></script>
+  <script src="{% static 'email_editor/js/ckeditor4/ckeditor.js' %}" referrerpolicy="origin"></script>
   <script>
-      ClassicEditor
-          .create( document.querySelector( '#htmlEditor' ) )
-          .catch( error => {
-              console.error( error );
-          } );
+      let editor = CKEDITOR.replace('htmlEditor', {
+          allowedContent: true,
+          autoGrow_onStartup: true,
+          enterMode: CKEDITOR.ENTER_BR
+      } );
   </script>
 {% endif %}
 </body>

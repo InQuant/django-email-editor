@@ -3,6 +3,8 @@ import os
 import re
 from typing import Union
 
+import bleach
+from bleach.css_sanitizer import CSSSanitizer, ALLOWED_CSS_PROPERTIES
 from django.template import loader, Template, TemplateSyntaxError, Context
 from django.template.backends.django import DjangoTemplates
 from django.template.loader import _engine_list
@@ -10,6 +12,59 @@ from django.template.loader import _engine_list
 from email_editor.settings import app_settings
 
 is_post_office_installed = None
+
+ALLOWED_EMAIL_ATTRIBUTES = {
+    '*': ['style'],
+    'a': ['href', 'title', 'name', 'style', 'id', 'class', 'shape', 'coords', 'alt', 'targe'],
+    'b': ['style', 'id', 'class'],
+    'br': ['style', 'id', 'class'],
+    'big': ['style', 'id', 'class'],
+    'blockquote': ['title', 'style', 'id', 'class'],
+    'caption': ['style', 'id', 'class'],
+    'code': ['style', 'id', 'class'],
+    'del': ['title', 'style', 'id', 'class'],
+    'div': ['title', 'style', 'id', 'class', 'align'],
+    'dt': ['style', 'id', 'class'],
+    'dd': ['style', 'id', 'class'],
+    'font': ['color', 'size', 'face', 'style', 'id', 'class'],
+    'h1': ['style', 'id', 'class', 'align'],
+    'h2': ['style', 'id', 'class', 'align'],
+    'h3': ['style', 'id', 'class', 'align'],
+    'h4': ['style', 'id', 'class', 'align'],
+    'h5': ['style', 'id', 'class', 'align'],
+    'h6': ['style', 'id', 'class', 'align'],
+    'hr': ['style', 'id', 'class'],
+    'i': ['style', 'id', 'class'],
+    'img': ['style', 'id', 'class', 'src', 'alt', 'height', 'width', 'title'],
+    'ins': ['title', 'style', 'id', 'class'],
+    'li': ['style', 'id', 'class'],
+    'map': ['shape', 'coords', 'href', 'alt', 'title', 'style', 'id', 'class', 'name'],
+    'ol': ['style', 'id', 'class'],
+    'p': ['style', 'id', 'class', 'align'],
+    'pre': ['style', 'id', 'class'],
+    's': ['style', 'id', 'class'],
+    'small': ['style', 'id', 'class'],
+    'strong': ['style', 'id', 'class'],
+    'span': ['title', 'style', 'id', 'class', 'align'],
+    'sub': ['style', 'id', 'class'],
+    'sup': ['style', 'id', 'class'],
+    'table': ['border', 'width', 'style', 'id', 'class', 'cellspacing', 'cellpadding'],
+    'tbody': ['align', 'valign', 'style', 'id', 'class'],
+    'td': ['width', 'height', 'style', 'id', 'class', 'align', 'valign', 'colspan', 'rowspan'],
+    'tfoot': ['align', 'valign', 'style', 'id', 'class', 'align', 'valign'],
+    'th': ['width', 'height', 'style', 'id', 'class', 'colspan', 'rowspan'],
+    'thead': ['align', 'valign', 'style', 'id', 'class'],
+    'tr': ['align', 'valign', 'style', 'id', 'class'],
+    'u': ['style', 'id', 'class'],
+    'ul': ['style', 'id', 'class'],
+    'php': ['id'],
+    'html': ['xmlns'],
+    'head': [],
+    'body': [],
+    'meta': ['content', 'name', 'http-equiv'],
+    'title': [],
+    'link': ['type', 'rel', 'href'],
+}
 
 try:
     from post_office.models import EmailTemplate
@@ -91,15 +146,33 @@ class EmailPreview(abc.ABC):
 
         return extract_subject(self.template, context=self.context)
 
+    @staticmethod
+    def _clean_content(content):
+        allowed_css_properties = [
+            'padding', 'margin', 'border'
+        ] + list(ALLOWED_CSS_PROPERTIES)
+        css_sanitizer = CSSSanitizer(
+            allowed_css_properties=set(allowed_css_properties)
+        )
+        return bleach.clean(
+            content,
+            tags=ALLOWED_EMAIL_ATTRIBUTES.keys(),
+            attributes=ALLOWED_EMAIL_ATTRIBUTES,
+            strip_comments=False,
+            css_sanitizer=css_sanitizer,
+        )
+
     def write(self, content):
+        cleaned_content = self._clean_content(content)
+
         if self.is_post_office:
             template_instance = self.template
-            template_instance.html_content = content
+            template_instance.html_content = cleaned_content
             template_instance.save()
             return
 
         with open(self.path, 'w') as file:
-            file.write(content)
+            file.write(cleaned_content)
 
     @property
     def context_tree(self):

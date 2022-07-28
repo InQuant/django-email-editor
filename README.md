@@ -23,11 +23,11 @@ And add the frontend path to `url.py`:
 from django.conf.urls import url
 from django.contrib import admin
 
-from email_editor.views import EmailTemplatePreviewView
+from django.urls import include
 
 urlpatterns = [
-    url(r'^admin/preview/', EmailTemplatePreviewView.as_view()),
-
+    url(r'^admin/preview/', include('email_editor.urls')),
+    
     url(r'^admin/', admin.site.urls),
 ]
 ```
@@ -47,6 +47,8 @@ class WelcomeEmailPreview(EmailPreview):
     
     # change this to true if you choose a post office email template in "template_name"
     is_post_office = False
+    # change language to edit multilang templates
+    language = 'de' 
 
     def get_template_context(self):
         return {
@@ -95,6 +97,13 @@ EMAIL_EDITOR = {
     'CONTEXT_TREE_MAX_DEPTH': 3
 }
 ```
+
+## Editors
+
+Available Editors:
+- ACE
+- CKEditor
+- TinyMCE
 
 ## Additional
 

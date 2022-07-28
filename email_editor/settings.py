@@ -7,6 +7,7 @@ from django.test.signals import setting_changed
 class WYSIWYGEditor(str, Enum):
     TINY_MCE = 'tinymce'
     CKEDITOR = 'ckeditor'
+    ACE = 'ace'
 
 
 DEFAULTS = {

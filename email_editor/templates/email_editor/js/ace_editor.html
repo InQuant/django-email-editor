@@ -1,0 +1,28 @@
+{% load static %}
+<script src="{% static 'email_editor/js/ace/src-min/ace.js' %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'email_editor/js/ace/src-min/ext-beautify.js' %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'email_editor/js/ace/src-min/mode-django.js' %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'email_editor/js/ace/src-min/ext-language_tools.js' %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'email_editor/js/ace/src-min/theme-monokai.js' %}" type="text/javascript" charset="utf-8"></script>
+<script>
+    let element = document.getElementById('htmlEditorDiv')
+
+    let editor = ace.edit(element, {
+        mode: 'ace/mode/django',
+        wrap: true,
+        autoScrollEditorIntoView: true,
+        maxLines: Infinity,
+        minLines: 10,
+        theme: 'ace/theme/monokai',
+        fontSize: 18,
+        enableBasicAutocompletion: true
+    })
+
+    let beautify = ace.require("ace/ext/beautify");
+    beautify.beautify(editor.session);
+
+    editor.session.on('change', function(delta) {
+        let hiddenInput = document.getElementById('htmlEditorValue')
+        hiddenInput.value = editor.getValue()
+    });
+</script>
