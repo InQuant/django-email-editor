@@ -50,7 +50,7 @@ class WelcomeEmailPreview(EmailPreview):
     # change language to edit multilang templates
     language = 'de' 
 
-    def get_template_context(self):
+    def get_template_context(self, **kwargs):
         return {
             'user': get_user_model().objects.first(),
             'test': {
@@ -60,6 +60,21 @@ class WelcomeEmailPreview(EmailPreview):
 
 ```
 
+```python
+# apps.py
+from django.apps import AppConfig
+
+
+class YourAppConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'your_app'
+
+    def ready(self):
+        super().ready()
+        # noinspection PyUnresolvedReferences
+        from . import email_previews
+
+```
 This will make the Template visible to the view.
 
 
